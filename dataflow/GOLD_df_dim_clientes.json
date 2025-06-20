@@ -50,6 +50,9 @@
 				},
 				{
 					"name": "filter1"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -110,7 +113,14 @@
 				"&& !isNull(BDATE)",
 				"&& !isNull(GEN) && trim(GEN) != ''",
 				"&& !isNull(CNTRY) && trim(CNTRY) != '') ~> filter1",
-				"filter1 sink(allowSchemaDrift: true,",
+				"filter1 aggregate(groupBy(cst_id),",
+				"     cst_firstname = first(cst_firstname),",
+				"          cst_lastname = first(cst_lastname),",
+				"          cst_marital_status = first(cst_marital_status),",
+				"          GEN = first(GEN),",
+				"          BDATE = first(BDATE),",
+				"          CNTRY = first(CNTRY)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          Id_Cliente as integer,",

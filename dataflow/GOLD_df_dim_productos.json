@@ -40,6 +40,9 @@
 				},
 				{
 					"name": "filter1"
+				},
+				{
+					"name": "aggregate1"
 				}
 			],
 			"scriptLines": [
@@ -93,7 +96,16 @@
 				"&& !isNull(CAT)",
 				"&& !isNull(SUBCAT)",
 				"&& !isNull(MAINTENANCE)) ~> filter1",
-				"filter1 sink(allowSchemaDrift: true,",
+				"filter1 aggregate(groupBy(prd_id),",
+				"     prd_key = first(prd_key),",
+				"          prd_nm = first(prd_nm),",
+				"          prd_cost = first(prd_cost),",
+				"          prd_line = first(prd_line),",
+				"          ID = first(ID),",
+				"          CAT = first(CAT),",
+				"          SUBCAT = first(SUBCAT),",
+				"          MAINTENANCE = first(MAINTENANCE)) ~> aggregate1",
+				"aggregate1 sink(allowSchemaDrift: true,",
 				"     validateSchema: false,",
 				"     input(",
 				"          Id_Producto as integer,",
