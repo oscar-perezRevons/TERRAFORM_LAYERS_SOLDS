@@ -1,0 +1,29 @@
+{
+	"name": "Silver_clientes_location",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sql_dw_clientes",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "SILVER"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "CID",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "CNTRY",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "SILVER",
+			"table": "CLIENTES_LOCATION"
+		}
+	}
+}

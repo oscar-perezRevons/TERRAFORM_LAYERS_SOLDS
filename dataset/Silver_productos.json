@@ -1,0 +1,50 @@
+{
+	"name": "Silver_productos",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sql_dw_clientes",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "SILVER"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "prd_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "prd_key",
+				"type": "varchar"
+			},
+			{
+				"name": "prd_nm",
+				"type": "varchar"
+			},
+			{
+				"name": "prd_cost",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "prd_line",
+				"type": "varchar"
+			},
+			{
+				"name": "prd_key_last",
+				"type": "varchar"
+			},
+			{
+				"name": "prd_cat_id",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "SILVER",
+			"table": "PRODUCTOS"
+		}
+	}
+}

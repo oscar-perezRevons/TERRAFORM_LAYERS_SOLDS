@@ -1,0 +1,96 @@
+{
+	"name": "SILVER_df_detalle_ventas",
+	"properties": {
+		"folder": {
+			"name": "SILVER"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "bronze_sql_detalle_ventas",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Silver_detalle_ventas",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "cast1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          sls_ord_num as string,",
+				"          sls_prd_key as string,",
+				"          sls_cust_id as string,",
+				"          sls_sales as string,",
+				"          sls_quantity as string,",
+				"          sls_price as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT sls_ord_num, sls_prd_key, sls_cust_id, sls_sales, sls_quantity, sls_price FROM BRONZE.DETALLE_VENTAS',",
+				"     format: 'query') ~> source1",
+				"source1 derive(sls_ord_num = substring(sls_ord_num, 3)) ~> derivedColumn1",
+				"derivedColumn1 filter(!isNull(sls_ord_num) && trim(sls_ord_num) != '' &&",
+				"!isNull(sls_prd_key) && trim(sls_prd_key) != '' &&",
+				"!isNull(sls_cust_id) && trim(sls_cust_id) != '' &&",
+				"!isNull(sls_sales) && trim(sls_sales) != '' &&",
+				"!isNull(sls_quantity) && trim(sls_quantity) != '' &&",
+				"!isNull(sls_price) && trim(sls_price) != '') ~> filter1",
+				"filter1 cast(output(",
+				"          sls_ord_num as integer,",
+				"          sls_cust_id as integer,",
+				"          sls_sales as integer,",
+				"          sls_quantity as integer,",
+				"          sls_price as integer",
+				"     ),",
+				"     errors: true) ~> cast1",
+				"cast1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          sls_ord_num as integer,",
+				"          sls_prd_key as string,",
+				"          sls_cust_id as integer,",
+				"          sls_sales as integer,",
+				"          sls_quantity as integer,",
+				"          sls_price as integer",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          sls_ord_num,",
+				"          sls_prd_key,",
+				"          sls_cust_id,",
+				"          sls_sales,",
+				"          sls_quantity,",
+				"          sls_price",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

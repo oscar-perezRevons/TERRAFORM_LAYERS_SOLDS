@@ -1,0 +1,144 @@
+{
+	"name": "GOLD_df_dim_clientes",
+	"properties": {
+		"folder": {
+			"name": "GOLD"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Silver_clientes",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "Silver_clientes_location",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				},
+				{
+					"dataset": {
+						"referenceName": "Silver_clientes_bd_gen",
+						"type": "DatasetReference"
+					},
+					"name": "source3"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Gold_dim_clientes",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "join2"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          cst_id as integer,",
+				"          cst_firstname as string,",
+				"          cst_lastname as string,",
+				"          cst_marital_status as string,",
+				"          cst_gndr as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT cst_id, cst_firstname, cst_lastname, cst_marital_status, cst_gndr FROM SILVER.CLIENTES',",
+				"     format: 'query') ~> source1",
+				"source(output(",
+				"          CID as integer,",
+				"          CNTRY as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
+				"source(output(",
+				"          CID as integer,",
+				"          BDATE as date,",
+				"          GEN as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source3",
+				"source1, source2 join(cst_id == CID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1, source3 join(cst_id == source3@CID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join2",
+				"join2 select(mapColumn(",
+				"          cst_id,",
+				"          cst_firstname,",
+				"          cst_lastname,",
+				"          cst_marital_status,",
+				"          GEN,",
+				"          BDATE,",
+				"          CNTRY",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 filter(!isNull(cst_id)",
+				"&& !isNull(cst_firstname) && trim(cst_firstname) != ''",
+				"&& !isNull(cst_lastname) && trim(cst_lastname) != ''",
+				"&& !isNull(cst_marital_status) && trim(cst_marital_status) != ''",
+				"&& !isNull(BDATE)",
+				"&& !isNull(GEN) && trim(GEN) != ''",
+				"&& !isNull(CNTRY) && trim(CNTRY) != '') ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Id_Cliente as integer,",
+				"          Nombre_Cliente as string,",
+				"          Apellido_Cliente as string,",
+				"          Estado_Civil_Cliente as string,",
+				"          Genero_Cliente as string,",
+				"          Fecha_Nacimiento_Cliente as date,",
+				"          Pais_Cliente as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Id_Cliente = cst_id,",
+				"          Nombre_Cliente = cst_firstname,",
+				"          Apellido_Cliente = cst_lastname,",
+				"          Estado_Civil_Cliente = cst_marital_status,",
+				"          Genero_Cliente = GEN,",
+				"          Fecha_Nacimiento_Cliente = BDATE,",
+				"          Pais_Cliente = CNTRY",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

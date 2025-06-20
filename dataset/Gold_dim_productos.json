@@ -1,0 +1,58 @@
+{
+	"name": "Gold_dim_productos",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sql_dw_clientes",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "GOLD"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Id_Producto",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Key_Producto",
+				"type": "varchar"
+			},
+			{
+				"name": "Nombre_Producto",
+				"type": "varchar"
+			},
+			{
+				"name": "Costo_Producto",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Linea_Producto",
+				"type": "varchar"
+			},
+			{
+				"name": "Categoria_Producto",
+				"type": "varchar"
+			},
+			{
+				"name": "Subcategoria_Producto",
+				"type": "varchar"
+			},
+			{
+				"name": "Mantenimiento_Producto",
+				"type": "varchar"
+			},
+			{
+				"name": "Id_Categoria",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "GOLD",
+			"table": "DIM_PRODUCTOS"
+		}
+	}
+}

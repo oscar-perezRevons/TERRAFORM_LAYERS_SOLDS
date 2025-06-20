@@ -1,0 +1,131 @@
+{
+	"name": "GOLD_df_dim_productos",
+	"properties": {
+		"folder": {
+			"name": "GOLD"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "Silver_productos",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				},
+				{
+					"dataset": {
+						"referenceName": "Silver_productos_cat_mant",
+						"type": "DatasetReference"
+					},
+					"name": "source2"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Gold_dim_productos",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "join1"
+				},
+				{
+					"name": "select1"
+				},
+				{
+					"name": "filter1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          prd_id as integer,",
+				"          prd_key as string,",
+				"          prd_nm as string,",
+				"          prd_cost as integer,",
+				"          prd_line as string,",
+				"          prd_cat_id as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT prd_id, prd_key, prd_nm, prd_cost, prd_line, prd_cat_id FROM SILVER.PRODUCTOS',",
+				"     format: 'query') ~> source1",
+				"source(output(",
+				"          ID as string,",
+				"          CAT as string,",
+				"          SUBCAT as string,",
+				"          MAINTENANCE as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     format: 'table') ~> source2",
+				"source1, source2 join(prd_cat_id == ID,",
+				"     joinType:'inner',",
+				"     matchType:'exact',",
+				"     ignoreSpaces: false,",
+				"     broadcast: 'auto')~> join1",
+				"join1 select(mapColumn(",
+				"          prd_id,",
+				"          prd_key,",
+				"          prd_nm,",
+				"          prd_cost,",
+				"          prd_line,",
+				"          ID,",
+				"          CAT,",
+				"          SUBCAT,",
+				"          MAINTENANCE",
+				"     ),",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true) ~> select1",
+				"select1 filter(!isNull(prd_id) ",
+				"&& !isNull(prd_key)",
+				"&& !isNull(prd_nm) ",
+				"&& !isNull(prd_cost)",
+				"&& !isNull(prd_line)",
+				"&& !isNull(ID)",
+				"&& !isNull(CAT)",
+				"&& !isNull(SUBCAT)",
+				"&& !isNull(MAINTENANCE)) ~> filter1",
+				"filter1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          Id_Producto as integer,",
+				"          Key_Producto as string,",
+				"          Nombre_Producto as string,",
+				"          Costo_Producto as integer,",
+				"          Linea_Producto as string,",
+				"          Categoria_Producto as string,",
+				"          Subcategoria_Producto as string,",
+				"          Mantenimiento_Producto as string,",
+				"          Id_Categoria as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          Id_Producto = prd_id,",
+				"          Key_Producto = prd_key,",
+				"          Nombre_Producto = prd_nm,",
+				"          Costo_Producto = prd_cost,",
+				"          Linea_Producto = prd_line,",
+				"          Categoria_Producto = CAT,",
+				"          Subcategoria_Producto = SUBCAT,",
+				"          Mantenimiento_Producto = MAINTENANCE,",
+				"          Id_Categoria = ID",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

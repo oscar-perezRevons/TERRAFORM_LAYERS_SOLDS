@@ -1,0 +1,84 @@
+{
+	"name": "SILVER_df_clientes_bd_gen",
+	"properties": {
+		"folder": {
+			"name": "SILVER"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "bronze_sql_clientes_bd_gen",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Silver_clientes_bd_gen",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "cast1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          CID as string,",
+				"          BDATE as string,",
+				"          GEN as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT CID, BDATE, GEN FROM BRONZE.CLIENTES_BD_GEN',",
+				"     format: 'query') ~> source1",
+				"source1 derive(CID = right(CID, 5),",
+				"          GEN = iif(trim(GEN) == 'F', 'Female',\r",
+				"    iif(trim(GEN) == 'M', 'Male', GEN)\r",
+				")) ~> derivedColumn1",
+				"derivedColumn1 filter(!isNull(CID) && trim(CID) != '' &&",
+				"!isNull(BDATE) && trim(BDATE) != '' &&",
+				"!isNull(GEN) && trim(GEN) != '') ~> filter1",
+				"filter1 cast(output(",
+				"          CID as integer,",
+				"          BDATE as date 'yyyy-MM-dd'",
+				"     ),",
+				"     errors: true) ~> cast1",
+				"cast1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          CID as integer,",
+				"          BDATE as date,",
+				"          GEN as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          CID,",
+				"          BDATE,",
+				"          GEN",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

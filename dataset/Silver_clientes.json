@@ -1,0 +1,46 @@
+{
+	"name": "Silver_clientes",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sql_dw_clientes",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "SILVER"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "cst_id",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cst_key",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "cst_firstname",
+				"type": "varchar"
+			},
+			{
+				"name": "cst_lastname",
+				"type": "varchar"
+			},
+			{
+				"name": "cst_marital_status",
+				"type": "varchar"
+			},
+			{
+				"name": "cst_gndr",
+				"type": "varchar"
+			}
+		],
+		"typeProperties": {
+			"schema": "SILVER",
+			"table": "CLIENTES"
+		}
+	}
+}

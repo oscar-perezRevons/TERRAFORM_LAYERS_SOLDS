@@ -1,0 +1,93 @@
+{
+	"name": "SILVER_df_clientes",
+	"properties": {
+		"folder": {
+			"name": "SILVER"
+		},
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "bronze_sql_clientes",
+						"type": "DatasetReference"
+					},
+					"name": "source1"
+				}
+			],
+			"sinks": [
+				{
+					"dataset": {
+						"referenceName": "Silver_clientes",
+						"type": "DatasetReference"
+					},
+					"name": "sink1"
+				}
+			],
+			"transformations": [
+				{
+					"name": "derivedColumn1"
+				},
+				{
+					"name": "filter1"
+				},
+				{
+					"name": "cast1"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          cst_id as string,",
+				"          cst_key as string,",
+				"          cst_firstname as string,",
+				"          cst_lastname as string,",
+				"          cst_marital_status as string,",
+				"          cst_gndr as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     query: 'SELECT cst_id, cst_key, cst_firstname, cst_lastname, cst_marital_status, cst_gndr FROM BRONZE.CLIENTES',",
+				"     format: 'query') ~> source1",
+				"source1 derive(cst_key = right(cst_key, 5)) ~> derivedColumn1",
+				"derivedColumn1 filter(!isNull(cst_id) && toString(cst_id) != ''",
+				"&& !isNull(cst_key) && cst_key != ''",
+				"&& !isNull(cst_firstname) && cst_firstname != ''",
+				"&& !isNull(cst_lastname) && cst_lastname != ''",
+				"&& !isNull(cst_marital_status) && cst_marital_status != ''",
+				"&& !isNull(cst_gndr) && cst_gndr != '') ~> filter1",
+				"filter1 cast(output(",
+				"          cst_id as integer,",
+				"          cst_key as integer",
+				"     ),",
+				"     errors: true) ~> cast1",
+				"cast1 sink(allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     input(",
+				"          cst_id as integer,",
+				"          cst_key as integer,",
+				"          cst_firstname as string,",
+				"          cst_lastname as string,",
+				"          cst_marital_status as string,",
+				"          cst_gndr as string",
+				"     ),",
+				"     deletable:false,",
+				"     insertable:true,",
+				"     updateable:false,",
+				"     upsertable:false,",
+				"     format: 'table',",
+				"     skipDuplicateMapInputs: true,",
+				"     skipDuplicateMapOutputs: true,",
+				"     errorHandlingOption: 'stopOnFirstError',",
+				"     mapColumn(",
+				"          cst_id,",
+				"          cst_key,",
+				"          cst_firstname,",
+				"          cst_lastname,",
+				"          cst_marital_status,",
+				"          cst_gndr",
+				"     )) ~> sink1"
+			]
+		}
+	}
+}

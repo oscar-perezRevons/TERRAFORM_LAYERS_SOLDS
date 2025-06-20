@@ -1,0 +1,58 @@
+{
+	"name": "Gold_dim_hechos_ventas",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "sql_dw_clientes",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "GOLD"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": [
+			{
+				"name": "Id_Venta",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Id_Producto",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Id_Cliente",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Numero_Orden",
+				"type": "varchar"
+			},
+			{
+				"name": "Fecha_Envio",
+				"type": "date"
+			},
+			{
+				"name": "Cantidad",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Precio",
+				"type": "int",
+				"precision": 10
+			},
+			{
+				"name": "Monto_Venta",
+				"type": "int",
+				"precision": 10
+			}
+		],
+		"typeProperties": {
+			"schema": "GOLD",
+			"table": "HECHOS_VENTAS"
+		}
+	}
+}
