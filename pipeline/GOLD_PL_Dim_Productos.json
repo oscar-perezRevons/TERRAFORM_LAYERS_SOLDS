@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
+				"name": "GOLD PL Dim Productos",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {

@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow1",
+				"name": "BRONZE PL Clientes Bd Gen",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {

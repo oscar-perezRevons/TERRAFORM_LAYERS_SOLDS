@@ -3,7 +3,7 @@
 	"properties": {
 		"activities": [
 			{
-				"name": "Data flow3",
+				"name": "GOLD PL Hechos Ventas",
 				"type": "ExecuteDataFlow",
 				"dependsOn": [],
 				"policy": {
